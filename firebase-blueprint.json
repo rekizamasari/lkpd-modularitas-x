@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "groupSubmission": {
+      "title": "GroupSubmission",
+      "description": "Student group registration, codes, test progress, reflections, and teacher rubric evaluation.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the group submission",
+          "maxLength": 128
+        },
+        "identity": {
+          "type": "object",
+          "description": "Group metadata including leader, school, group name, and members"
+        },
+        "studentCodes": {
+          "type": "object",
+          "description": "Map of exercise ID to student python code string"
+        },
+        "moduleCodes": {
+          "type": "object",
+          "description": "Map of module step to student python code string"
+        },
+        "passedExercises": {
+          "type": "object",
+          "description": "Map of exercise ID to boolean passed status"
+        },
+        "passedModules": {
+          "type": "object",
+          "description": "Map of module step to boolean passed status"
+        },
+        "reflectionAnswers": {
+          "type": "object",
+          "description": "Map of reflection question ID to student answers"
+        },
+        "rubricScores": {
+          "type": "object",
+          "description": "Map of rubric criteria ID to score (1-4)"
+        },
+        "teacherFeedback": {
+          "type": "string",
+          "description": "Teacher qualitative feedback notes for this group",
+          "maxLength": 2000
+        },
+        "teacherName": {
+          "type": "string",
+          "description": "Name of the teacher who graded this group",
+          "maxLength": 128
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last activity update",
+          "maxLength": 64
+        }
+      },
+      "required": ["id", "identity", "updatedAt"]
+    },
+    "teacherConfig": {
+      "title": "TeacherConfig",
+      "description": "Teacher administrative configuration including PIN and verification status.",
+      "type": "object",
+      "properties": {
+        "pin": {
+          "type": "string",
+          "description": "Teacher access PIN code",
+          "minLength": 4,
+          "maxLength": 32
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last PIN update",
+          "maxLength": 64
+        }
+      },
+      "required": ["pin", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/groups/{groupId}": {
+      "schema": "groupSubmission",
+      "description": "Student groups work, answers, and scores"
+    },
+    "/settings/{settingId}": {
+      "schema": "teacherConfig",
+      "description": "Global settings for teacher access"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "LKPD Modularitas Python Kelas X - Koding & AI",
+  "description": "Lembar Kerja Peserta Didik (LKPD) Interaktif dan Siap Cetak materi Modularitas Python dengan Studi Kasus Sistem Kasir Otomatis untuk Kelas X SMA/SMK.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidGroup(data, groupId) {
+      return data.id is string &&
+             data.id == groupId &&
+             isValidId(data.id) &&
+             data.identity is map &&
+             data.updatedAt is string &&
+             data.updatedAt.size() <= 64 &&
+             (!('teacherFeedback' in data) || (data.teacherFeedback is string && data.teacherFeedback.size() <= 2000)) &&
+             (!('teacherName' in data) || (data.teacherName is string && data.teacherName.size() <= 128)) &&
+             (!('studentCodes' in data) || data.studentCodes is map) &&
+             (!('moduleCodes' in data) || data.moduleCodes is map) &&
+             (!('passedExercises' in data) || data.passedExercises is map) &&
+             (!('passedModules' in data) || data.passedModules is map) &&
+             (!('reflectionAnswers' in data) || data.reflectionAnswers is map) &&
+             (!('rubricScores' in data) || data.rubricScores is map);
+    }
+
+    function isValidTeacherConfig(data) {
+      return data.pin is string &&
+             data.pin.size() >= 4 &&
+             data.pin.size() <= 32 &&
+             data.updatedAt is string &&
+             data.updatedAt.size() <= 64;
+    }
+
+    // Student Group Submissions collection
+    match /groups/{groupId} {
+      allow get: if isValidId(groupId);
+      allow list: if true;
+      allow create, update: if isValidId(groupId) && isValidGroup(incoming(), groupId);
+      allow delete: if isValidId(groupId);
+    }
+
+    // Teacher Settings (e.g. Teacher PIN synchronization)
+    match /settings/{settingId} {
+      allow get: if isValidId(settingId);
+      allow list: if true;
+      allow create, update: if isValidId(settingId) && isValidTeacherConfig(incoming());
+      allow delete: if false;
+    }
+  }
+}
